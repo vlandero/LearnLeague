@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .modal{
+        @apply fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white p-11 w-1/3 max-w-[480px] z-40 flex flex-col overflow-auto rounded-3xl
+    }
+    .overlay{
+        @apply fixed top-0 left-0 bottom-0 right-0 bg-transparentOverlay z-30
+    }
+    .add-game-modal-title{
+        @apply text-2xl font-bold flex justify-between p-2 w-full border-b-4 border-black
+    }
+    .add-game-modal-body{
+        /* @apply  */
+    }
+    .submit-button{
+        @apply cursor-pointer
+    }
+    .button{
+        @apply cursor-pointer border-cyan-900 border-4 p-1
+    }
+}

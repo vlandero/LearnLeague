@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS Users (
+    id serial PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(80) NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	token VARCHAR(60) NOT NULL,
+	verified BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS Matches (
+    id serial PRIMARY KEY,
+	user_id INT NOT NULL,
+    json VARCHAR NOT NULL,
+	date_added TIMESTAMP DEFAULT current_timestamp,
+    description VARCHAR NOT NULL,
+	questions VARCHAR NOT NULL,
+	token VARCHAR(10) NOT NULL,
+	CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Comments(
+	id serial PRIMARY KEY,
+	match_id int,
+	user_id int NOT NULL,
+	parent_id int,
+	content VARCHAR NOT NULL,
+	CONSTRAINT fk_match FOREIGN KEY(match_id) REFERENCES Matches(id) ON DELETE CASCADE,
+	CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE,
+	CONSTRAINT fk_parent FOREIGN KEY(parent_id) REFERENCES Comments(id) ON DELETE CASCADE
+);
+
+CREATE TYPE rank AS ENUM('IV','III','II','I');
+CREATE TYPE tier AS ENUM('IRON','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','GRANDMASTER');
+
+CREATE TABLE IF NOT EXISTS Accounts(
+	puuid varchar PRIMARY KEY UNIQUE,
+	summoner_name VARCHAR UNIQUE NOT NULL,
+	id VARCHAR UNIQUE NOT NULL,
+	accountId VARCHAR UNIQUE NOT NULL,
+	user_id int NOT NULL,
+	rank rank NOT NULL,
+	tier tier NOT NULL,
+	LP int NOT NULL,
+	region VARCHAR NOT NULL,
+	CONSTRAINT fk_usern FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
