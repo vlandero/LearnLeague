@@ -14,6 +14,7 @@ async function handler(req:NextApiRequest,res:NextApiResponse){
     let query = `SELECT * FROM users u WHERE u.username='${body.username}'`
     try{
         let result = await connection.query(query)
+        console.log(result.rows.length);
         if(result.rows.length === 0){
             return res.status(500).json({
                 error:true,

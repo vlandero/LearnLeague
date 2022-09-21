@@ -30,6 +30,9 @@ export default function Login(props:{user:User}) {
             },{})
             let res = await promise
             console.log(res)
+            if(res.error){
+              return setMessage(res.status)
+            }
             window.location.href = '/profile'
         }}>
             <label htmlFor="username" >Username</label>
