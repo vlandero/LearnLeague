@@ -7,8 +7,8 @@ import AddComment from './add-comment'
 interface Props{
     content:string,
     username:string,
-    user_id:bigint,
-    id:bigint,
+    user_id:number,
+    id:number,
     setCommAdded:React.Dispatch<React.SetStateAction<boolean>>,
     replies:CommentType[]
 }

@@ -10,19 +10,21 @@ interface TypedNextApiRequest extends NextApiRequest {
 }
 
 export default async function handler(req:TypedNextApiRequest,res:NextApiResponse){
-    try{
-        let accountsResult:QueryResult<SummonerInDB> = await connection.query(`SELECT * FROM accounts WHERE user_id=${req.query.id}`)
-        let accounts:SummonerInDB[] = []
-        for(let account of accountsResult.rows){
-            accounts.push(account)
+    if(req.method === 'GET'){
+        try{
+            let accountsResult:QueryResult<SummonerInDB> = await connection.query(`SELECT * FROM accounts WHERE user_id=${req.query.id}`)
+            let accounts:SummonerInDB[] = []
+            for(let account of accountsResult.rows){
+                accounts.push(account)
+            }
+            res.status(200).send({
+                error:false,
+                status:JSON.stringify(accounts)
+            })
         }
-        res.status(200).send({
-            error:false,
-            status:JSON.stringify(accounts)
-        })
-    }
-    catch(err){
-        res.status(400).send(internalError)
+        catch(err){
+            res.status(400).send(internalError)
+        }
     }
     
 }

@@ -70,13 +70,13 @@ export default function AddSummoner({isOpen,close,user,setTrigger}:Props) {
         </ModalTitle>
         <div>
             <form className='flex flex-col w-2/6' onSubmit={async (e)=>{
-                e.preventDefault()
-                setSummonerOK(false)
-                setMessage('')
-                let promise = await ApiService.get(`/riot/${summonerName}/${region}`,{})
-                let res:Status = await promise
+                e.preventDefault();
+                setSummonerOK(false);
+                setMessage('');
+                let promise = await ApiService.post(`/riot`,{summonerName:summonerName,region:region},{});
+                let res:Status = await promise;
                 if(res.error === false)
-                    return setSummonerOK(true)
+                    return setSummonerOK(true);
 
                 setMessage(res.status)
                 

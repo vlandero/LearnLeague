@@ -27,7 +27,7 @@ export type SummonerInDB = {
 }
 
 export type User = {
-    id:bigint,
+    id:number,
     username:string
 }|null
 
@@ -113,7 +113,7 @@ export interface Matches{
 }
 
 export interface CommentType{
-    id:bigint,
+    id:number,
     content:string,
     username:string,
     replies:CommentType[]

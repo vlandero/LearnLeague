@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { ApiService } from '../lib/ApiCalls'
-import { regionCodes, regions, SummonerInDB } from '../lib/interfaces'
-import Loading from './loading'
-import { Match, Matches } from '../lib/interfaces'
-import GamePreview from './game-preview'
-import {MatchDetails} from './add-game'
+import React, { useState } from 'react';
+import { ApiService } from '../lib/ApiCalls';
+import { regionCodes, regions, Status, SummonerInDB } from '../lib/interfaces';
+import Loading from './loading';
+import { Match } from '../lib/interfaces';
+import GamePreview from './game-preview';
+import {MatchDetails} from './add-game';
 
 interface Props{
     matchDetails:MatchDetails,
@@ -14,38 +14,41 @@ interface Props{
 }
 
 export default function ChooseGame({setMatchDetails,matchDetails,goBack,accounts}:Props) {
-    const [loading, setLoading] = useState(false)
-    const [summonerName, setSummonerName] = useState<string>('---')
-    const [message,setMessage] = useState('')
-    const [matches, setMatches] = useState<Match[]>([])
+    const [loading, setLoading] = useState<boolean>(false);
+    const [summoner, setSummoner] = useState<SummonerInDB|null>(accounts[0]||null);
+    const [summonerName, setSummonerName] = useState<string>(accounts[0].summoner_name||'---');
+    const [message, setMessage] = useState<string>('');
+    const [matches, setMatches] = useState<Match[]>([]);
     
     let accountMap:{
-        [index:string]:SummonerInDB
-    } = {}
+        [index:string]:SummonerInDB|null
+    } = {};
 
     for(let account of accounts){
-        accountMap[account.summoner_name] = account
+        accountMap[account.summoner_name] = account;
     }
+    accountMap['---'] = null;
 
     function handleSelect(e:React.ChangeEvent<HTMLSelectElement>){
-        setSummonerName(e.target.value)
-        
+        setSummonerName(e.target.value);
+        setSummoner(accountMap[e.target.value]);
     }
     async function findGames(e:React.FormEvent<HTMLFormElement>){
-        e.preventDefault()
-        if(summonerName === '---')
-            return setMessage('Summoner name field can not be empty')
-        setLoading(true)
-        setMessage('')
-        let promise = await ApiService.get(`/riot/${summonerName}/${region}`,{})
-        let res:Matches = await promise
-        if(res.error !== null){
-            setLoading(false)
-            return setMessage(res.error)
+        e.preventDefault();
+        if(summonerName === '---' || summoner === null)
+            return setMessage('Summoner name can not be empty');
+        setLoading(true);
+        setMessage('');
+        let promise = await ApiService.get(`/riot/${summoner.puuid}/${summoner.region}`,{});
+        let res:Status = await promise;
+        if(res.error === true){
+            setLoading(false);
+            return setMessage(res.status);
         }
-        setMatches(res.matches)
+        console.log(res)
+        setMatches(JSON.parse(res.status));
         console.log(matches);
-        setLoading(false)
+        setLoading(false);
     }
     if(loading){
         return (
@@ -67,8 +70,8 @@ export default function ChooseGame({setMatchDetails,matchDetails,goBack,accounts
         <p>{message}</p>
         <div>
             {matches.map(mt=><GamePreview onClick={()=>{
-                setMatchDetails({...matchDetails,match:mt})
-                goBack()
+                setMatchDetails({...matchDetails,match:mt});
+                goBack();
             }} key={mt.id} match={mt}></GamePreview>)}
         </div>
         

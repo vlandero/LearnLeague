@@ -56,34 +56,24 @@ export class League{
         }
     }
 
-    public static async match_history(summoner_name:string,reg:RegionCodes):Promise<Matches>{
-        let region = bigRegions[reg]
-        let puuid:string
-        try{
-            puuid = (await League.summoner(summoner_name,reg)).puuid
-        }
-        catch(err){
-            return {
-                matches:[],
-                error:'User not found'
-            }
-        }
+    public static async match_history(puuid:string,reg:RegionCodes):Promise<Match[]>{
+        let region = bigRegions[reg];
         const config = {
             method:'get',
             url:'https://' + region + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids',
             headers:{"X-Riot-Token": riotapi||''}
         }
-        let fullmatches = await axios(config)
-        let matches:Match[] = []
+        let fullmatches = await axios(config);
+        let matches:Match[] = [];
         for(let i = 0; i < 2; ++i){
-            let matchID:string = fullmatches.data[i]
+            let matchID:string = fullmatches.data[i];
             let fullMatch = await axios({
                 method:'get',
                 url:'https://' + region + '.api.riotgames.com/lol/match/v5/matches/' + matchID,
                 headers:{"X-Riot-Token": riotapi||''}
-            })
-            let match:Match
-            let players:Player[] = []
+            });
+            let match:Match;
+            let players:Player[] = [];
             for(let participant of fullMatch.data.info.participants){
                 let prov:Player = {
                     lane:participant.teamPosition,
@@ -151,12 +141,12 @@ export class League{
                     dragons:calculateDragons(5,10),
                     players:[],
                 }
-            }
+            };
             for(let i = 0; i < 5; ++i)
-                teams.blue.players.push(players[i])
+                teams.blue.players.push(players[i]);
             
             for(let i = 0; i < 5; ++i)
-                teams.red.players.push(players[5 + i])
+                teams.red.players.push(players[5 + i]);
             
             match = {
                 id:matchID,
@@ -167,10 +157,6 @@ export class League{
             }
             matches.push(match)
         }
-        let toReturn:Matches = {
-            matches:matches,
-            error:null
-        }
-        return toReturn
+        return matches
     }
 }

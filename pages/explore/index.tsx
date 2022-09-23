@@ -6,7 +6,7 @@ import GamePreview from '../../components/game-preview'
 
 type Matches = {
   username:string,
-  id:bigint,
+  id:number,
   token:string,
   match:Match,
 }

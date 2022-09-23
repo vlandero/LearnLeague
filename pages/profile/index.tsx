@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
+import { useAuth } from '../../context/state'
 import { User } from '../../lib/interfaces'
-import { withIronSessionSsr } from 'iron-session/next'
-import { useUser } from '../../lib/helpers'
-import ironSessionOptions from '../../lib/session-options'
 
-export default function Profile(props:{user:User}) {
+export default function Profile() {
+    const {user} = useAuth()
     useEffect(() => {
-        if(props.user === null)
+        if(user === null)
           window.location.href = '/login'
         else
-            window.location.href = `/profile/${props.user.username}`
+            window.location.href = `/profile/${user.username}`
       }, [])
     return (
         <div>
@@ -17,5 +16,3 @@ export default function Profile(props:{user:User}) {
         </div>
     )
 }
-
-export const getServerSideProps = withIronSessionSsr(useUser,ironSessionOptions)

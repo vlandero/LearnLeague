@@ -5,9 +5,9 @@ import connection from '../../lib/postgre'
 export default async function handler(req:NextApiRequest,res:NextApiResponse){
     let body:{
         content:string,
-        user_id:bigint,
-        match_id:bigint|null,
-        parent_id:bigint|null
+        user_id:number,
+        match_id:number|null,
+        parent_id:number|null
     } = req.body
     let query = `INSERT INTO Comments(content,match_id,user_id,parent_id) VALUES('${body.content}',${body.match_id},${body.user_id},${body.parent_id});`
     try{

@@ -1,15 +1,15 @@
 import React, { useState,useEffect } from 'react'
+import { useAuth } from '../context/state'
 import { ApiService } from '../lib/ApiCalls'
-import { useUser, ValidateEmail, ValidatePassword } from '../lib/helpers'
-import { Status, User } from '../lib/interfaces'
-import { withIronSessionSsr } from 'iron-session/next'
-import ironSessionOptions from '../lib/session-options'
+import { ValidateEmail, ValidatePassword } from '../lib/helpers'
+import { Status } from '../lib/interfaces'
 
-export default function Register(props:{user:User}) {
+export default function Register() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState('')
+    const {user} = useAuth()
     function handleChange(event:React.ChangeEvent<HTMLInputElement>){
         if(event.target.name==="username")
             setUsername(event.target.value)
@@ -19,7 +19,7 @@ export default function Register(props:{user:User}) {
             setEmail(event.target.value)
     }
     useEffect(() => {
-        if(props.user !== null)
+        if(user !== null)
           window.location.href = '/profile'
       }, [])
   return (
@@ -64,4 +64,3 @@ export default function Register(props:{user:User}) {
   )
 }
 
-export const getServerSideProps = withIronSessionSsr(useUser,ironSessionOptions)

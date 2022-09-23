@@ -6,7 +6,7 @@ import connection from '../../lib/postgre'
 import AddComment from '../../components/add-comment'
 import { ApiService } from '../../lib/ApiCalls'
 import Comment from '../../components/comment'
-import { withIronSessionSsr } from 'iron-session/next/dist'
+import { withIronSessionSsr } from 'iron-session/next'
 import ironSessionOptions from '../../lib/session-options'
 
 interface Props{
@@ -14,8 +14,8 @@ interface Props{
   error:string|null,
   comments:CommentType[],
   username:string,
-  user_id:bigint,
-  match_id:bigint,
+  user_id:number,
+  match_id:number,
   date_added_string:string
 }
 

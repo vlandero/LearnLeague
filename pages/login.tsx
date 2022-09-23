@@ -1,46 +1,47 @@
-import React, { useEffect, useState } from 'react'
-import { ApiService } from '../lib/ApiCalls'
-import { Status, User } from '../lib/interfaces'
-import { withIronSessionSsr } from 'iron-session/next'
-import ironSessionOptions from '../lib/session-options'
-import { useUser } from '../lib/helpers'
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/state';
+import { ApiService } from '../lib/ApiCalls';
+import { Status, User } from '../lib/interfaces';
 
-export default function Login(props:{user:User}) {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
+export default function Login() {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+
+    const {user,login} = useAuth();
     function handleChange(event:React.ChangeEvent<HTMLInputElement>){
         if(event.target.name==="username")
-            setUsername(event.target.value)
+            setUsername(event.target.value);
         if(event.target.name==="password")
-            setPassword(event.target.value)
+            setPassword(event.target.value);
     }
     useEffect(() => {
-      if(props.user !== null)
-        window.location.href = '/profile'
+      if(user !== null)
+        window.location.href = `/profile/${user.username}`;
     }, [])
       
   return (
     <div>
         <form onSubmit={async (e)=>{
-            e.preventDefault()
+            e.preventDefault();
             let promise = await ApiService.post('login',{
               username:username,
               password:password
             },{})
-            let res = await promise
-            console.log(res)
+            let res:Status = await promise;
             if(res.error){
-              return setMessage(res.status)
+              return setMessage(res.status);
             }
-            window.location.href = '/profile'
+            const user: User = JSON.parse(res.status);
+            login(user);
+            window.location.href = `/profile/${(JSON.parse(res.status)).username}`;
         }}>
             <label htmlFor="username" >Username</label>
             <input type="text" required name="username" id="" onChange={handleChange} />
             <br />
             <label htmlFor="password">Password</label>
             <input type="password" required name="password" id="" onChange={handleChange} />
-            <p>{message!==''?message:null}</p>
+            <p>{message !== '' ? message : null}</p>
             <input type="submit" value="Submit" />
             <br />
             
@@ -48,5 +49,3 @@ export default function Login(props:{user:User}) {
     </div>
   )
 }
-
-export const getServerSideProps = withIronSessionSsr(useUser,ironSessionOptions)

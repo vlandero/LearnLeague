@@ -4,10 +4,10 @@ import { CommentType } from '../../lib/interfaces'
 import { QueryResult } from 'pg'
 
 
-async function recursion(comms:{id:bigint,content:string,username:string}[]):Promise<CommentType[]>{
+async function recursion(comms:{id:number,content:string,username:string}[]):Promise<CommentType[]>{
     let comments:CommentType[] = []
     for(let comm of comms){
-        let replyQuery:QueryResult<{id:bigint,content:string,username:string}> = await connection.query(`
+        let replyQuery:QueryResult<{id:number,content:string,username:string}> = await connection.query(`
         SELECT
             c.id,
             c.content,
@@ -29,13 +29,13 @@ async function recursion(comms:{id:bigint,content:string,username:string}[]):Pro
 
 export default async function handler(req:NextApiRequest,res:NextApiResponse){
     let body:{
-        match_id:bigint
+        match_id:number
     } = req.body
     
         
     let comments:CommentType[] = []
     try{
-        let result:QueryResult<{id:bigint,content:string,username:string}> = await connection.query(`
+        let result:QueryResult<{id:number,content:string,username:string}> = await connection.query(`
         SELECT
             c.id,
             c.content,

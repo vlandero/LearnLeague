@@ -1,12 +1,22 @@
 import React from 'react'
+import { useAuth } from '../context/state'
+import NavItem from './nav-item';
 
 export default function Nav() {
+  const { user } = useAuth();
+  const renderProfile = (): JSX.Element | null => {
+    if(user === null)
+      return null;
+    return(
+      <NavItem link={`/profile/${user.username}`}>{user.username}</NavItem>
+    );
+  }
   return (
     <div className='w-1/3 flex justify-between'>
-      <a className='w-full text-center button m-2' href='/explore'>Explore</a>
-      <a className='w-full text-center button m-2' href='/login'>Login</a>
-      <a className='w-full text-center button m-2' href='/register'>Register</a>
-      <a className='w-full text-center button m-2' href='/profile'>Profile</a>
+      <NavItem link='/explore'>Explore</NavItem>
+      <NavItem link='/login'>Login</NavItem>
+      <NavItem link='/register'>Register</NavItem>
+      {renderProfile()}
     </div>
   )
 }

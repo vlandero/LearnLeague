@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import ironSessionOptions from '../../lib/session-options'
 import connection from '../../lib/postgre'
+import { internalError } from '../../lib/interfaces'
 
 
 
@@ -25,20 +26,20 @@ async function handler(req:NextApiRequest,res:NextApiResponse){
             username:result.rows[0].username,
             id:result.rows[0].id
         }
-        await req.session.save()
+        await req.session.save();
+        res.status(200).json({
+            error:false,
+            status:JSON.stringify({
+                username:result.rows[0].username,
+                id:result.rows[0].id
+            })
+        });
     }
     catch(err:any){
-        console.log(err)
-        return res.status(501).json({
-            error:true,
-            status:err
-        })
+        console.log(err);
+        return res.status(501).json(internalError);
     }
-    
-    res.status(200).json({
-        error:false,
-        status:'Logged in successfully'
-    })
+
 }
 
 export default withIronSessionApiRoute(handler,ironSessionOptions)

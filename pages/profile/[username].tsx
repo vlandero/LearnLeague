@@ -1,9 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import { ApiService } from '../../lib/ApiCalls'
 import { Match, Status, User } from '../../lib/interfaces'
-import { withIronSessionSsr } from 'iron-session/next'
-import { useUser } from '../../lib/helpers'
-import ironSessionOptions from '../../lib/session-options'
 import AddGame from '../../components/add-game'
 import AddSummoner from '../../components/add-summoner'
 import { GetServerSideProps } from 'next'
@@ -11,37 +8,31 @@ import connection from '../../lib/postgre'
 import {SummonerInDB} from '../../lib/interfaces'
 import { QueryResult } from 'pg'
 import Account from '../../components/account'
+import { useAuth } from '../../context/state'
 
 type Props = {
-    user:User,
     pageUser:{
-        id:bigint,
+        id:number,
         username:string,
         email:string
     }|null
     error:string
 }
 
-export default function Profile({user,pageUser,error}:Props) {
+export default function Profile({pageUser,error}:Props) {
     const [modal, setModal] = useState(false)
     const [modalSummoner, setModalSummoner] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
     const [accounts, setAccounts] = useState<SummonerInDB[]>([])
     const [posts, setPosts] = useState<Match[]>([])
     const [trigger, setTrigger] = useState<boolean>(false)
+    const {user,logout} = useAuth()
     if(!pageUser){
         return(
             <div>
                 <p>{error}</p>
             </div>
         )
-    }
-    async function logout(){
-        let promise = await ApiService.post('logout',{},{})
-        let res:Status = await promise
-        console.log(res)
-        if(!res.error)
-            setCanEdit(false)
     }
     async function getGames(){
         let result:Status = await ApiService.get(`/getgames/${pageUser?.id}`,{})
@@ -52,7 +43,7 @@ export default function Profile({user,pageUser,error}:Props) {
     }
     useEffect(() => {
         if(pageUser && user?.username === pageUser.username)
-            setCanEdit(true)
+            setCanEdit(true);
         }, []
     )
     useEffect(() => {
@@ -64,7 +55,14 @@ export default function Profile({user,pageUser,error}:Props) {
         if(canEdit && user !== null){
             return(
                 <div>
-                    <button className='button' onClick={logout}>Logout</button>
+                    <button className='button' onClick={async ()=>{
+                        const res:Status = await ApiService.post('logout',{},{});
+                        if(res.error){
+                            console.log(res.status);
+                            return alert("Could not log out");
+                        }
+                        logout();
+                    }}>Logout</button>
                     <br/>
                     <button className='button' onClick={()=>{setModal(true)}}>Add Game</button>
                     <br></br>
@@ -97,18 +95,17 @@ export default function Profile({user,pageUser,error}:Props) {
     )
 }
 
-const SSR:GetServerSideProps = async(context) =>{
-    let user = (await useUser(context)).props.user
-    if(typeof(context.query.username) !== 'string')
+export const getServerSideProps:GetServerSideProps = async (context) => {
+    if(typeof(context.query.username) !== 'string'){
         return {
             props:{
                 pageUser:null,
-                user:user,
                 error:'URL does not exist'
             }
         }
+    }
     let userResult:QueryResult<{
-        id:bigint,
+        id:number,
         username:string,
         email:string
     }> = await connection.query(`SELECT id,username,email FROM users WHERE username='${context.query.username}'`)
@@ -116,13 +113,11 @@ const SSR:GetServerSideProps = async(context) =>{
         return {
             props:{
                 pageUser:null,
-                user:null,
                 error:'Username does not exist'
             }
         }
     return{
       props:{
-        user:user,
         pageUser: {
             id:userResult.rows[0].id,
             username:userResult.rows[0].username,
@@ -132,5 +127,3 @@ const SSR:GetServerSideProps = async(context) =>{
       }
     }
 }
-
-export const getServerSideProps = withIronSessionSsr(SSR,ironSessionOptions)
