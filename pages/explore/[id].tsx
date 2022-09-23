@@ -8,6 +8,7 @@ import { ApiService } from '../../lib/ApiCalls'
 import Comment from '../../components/comment'
 import { withIronSessionSsr } from 'iron-session/next'
 import ironSessionOptions from '../../lib/session-options'
+import { useAuth } from '../../context/state'
 
 interface Props{
   match:Match,
@@ -20,28 +21,41 @@ interface Props{
 }
 
 export default function MatchPage({match,error,username,date_added_string,user_id,match_id}:Props) {
-  const [comments, setComments] = useState<CommentType[]>([])
-  const [commAdded, setCommAdded] = useState(false)
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [commAdded, setCommAdded] = useState(false);
+  const { user } = useAuth();
   useEffect(() => {
     let fc = async() => {
-      let promise = await ApiService.post('getcomments',{match_id:match_id},{})
-      let result:Status = await promise
-      setComments(JSON.parse(result.status))
-      console.log('object,',JSON.parse(result.status));
+      let promise = await ApiService.post('getcomments',{match_id:match_id},{});
+      let result:Status = await promise;
+      if(result.error){
+        return console.log(result.status);
+      }
+      setComments(JSON.parse(result.status));
     }
     if(error===null)
       fc()
-  },[commAdded])
+  },[commAdded]);
   
-  let date_added = new Date(date_added_string)
-  const router = useRouter()
-  const {id} = router.query
+  let date_added = new Date(date_added_string);
+  const router = useRouter();
+  const {id} = router.query;
   async function addComment(comment:string){
-    let promise = await ApiService.post('addcomment',{content:comment,user_id:user_id,match_id:match_id,parent_id:null},{})
-    let result:Status = await promise
-    setCommAdded(prev=>!prev)
-    console.log(result);
+    if(!user)
+      return alert("You are not logged in! You cannot add comments.");
+    let promise = await ApiService.post('addcomment',{content:comment,user_id:user?.id,match_id:match_id,parent_id:null},{});
+    let result:Status = await promise;
+    if(result.error)
+      return alert(result.status);
+    setCommAdded(prev=>!prev);
   }
+
+  const canComment = () => {
+    if(!user)
+      return null;
+    return <AddComment add={addComment}></AddComment>
+  }
+
   if(error!==null)
     return (
       <div>{error}</div>
@@ -50,9 +64,9 @@ export default function MatchPage({match,error,username,date_added_string,user_i
     <div>
       {id} by {username} on {date_added.getDate()}/{date_added.getMonth()+1}/{date_added.getFullYear()}
       <div>
-        <AddComment add={addComment}></AddComment>
+        {canComment()}
         <div>
-          {comments.map((comm)=><Comment key={comm.id.toString()} replies={comm.replies} setCommAdded={setCommAdded} id={comm.id} user_id={user_id} content={comm.content} username={comm.username}></Comment>)}
+          {comments.map((comm)=><Comment key={comm.comment_id.toString()} replies={comm.replies} setCommAdded={setCommAdded} comment_id={comm.comment_id} user_who_posted_id={user_id} content={comm.content} user_who_commented_username={comm.username} user_who_commented_id={comm.user_id}></Comment>)}
         </div>
       </div>
     </div>

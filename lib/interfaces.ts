@@ -113,9 +113,10 @@ export interface Matches{
 }
 
 export interface CommentType{
-    id:number,
+    comment_id:number,
     content:string,
     username:string,
+    user_id:number,
     replies:CommentType[]
 }
 

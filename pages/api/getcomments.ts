@@ -4,22 +4,24 @@ import { CommentType } from '../../lib/interfaces'
 import { QueryResult } from 'pg'
 
 
-async function recursion(comms:{id:number,content:string,username:string}[]):Promise<CommentType[]>{
+async function recursion(comms:{comment_id:number,user_id:number,content:string,username:string}[]):Promise<CommentType[]>{
     let comments:CommentType[] = []
     for(let comm of comms){
-        let replyQuery:QueryResult<{id:number,content:string,username:string}> = await connection.query(`
+        let replyQuery:QueryResult<{comment_id:number,user_id:number,content:string,username:string}> = await connection.query(`
         SELECT
-            c.id,
+            c.id AS comment_id,
             c.content,
+            u.id AS user_id,
             u.username
         FROM comments c
         JOIN users u ON u.id=c.user_id
-        WHERE parent_id=${comm.id};
+        WHERE parent_id=${comm.comment_id};
         `)
         comments.push({
             content:comm.content,
             username:comm.username,
-            id:comm.id,
+            comment_id:comm.comment_id,
+            user_id:comm.user_id,
             replies:await recursion(replyQuery.rows)
         })
     }
@@ -35,19 +37,21 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
         
     let comments:CommentType[] = []
     try{
-        let result:QueryResult<{id:number,content:string,username:string}> = await connection.query(`
+        console.log(body.match_id);
+        let result:QueryResult<{comment_id:number,content:string,username:string,user_id:number}> = await connection.query(`
         SELECT
-            c.id,
+            c.id AS comment_id,
             c.content,
+            u.id AS user_id,
             u.username
         FROM comments c
         JOIN users u ON u.id=c.user_id
         WHERE match_id=${body.match_id};
-        `)
-        comments = await recursion(result.rows)
+        `);
+        comments = await recursion(result.rows);
     }
     catch(err){
-        console.log(err)
+        console.log('in getcomments', err);
         res.status(500).json({
             error:true,
             status:'Internal error. Try again.'
