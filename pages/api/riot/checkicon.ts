@@ -31,7 +31,7 @@ export default async function handler(req:TypedNextApiRequest,res:NextApiRespons
             })
         }
         else{
-            let ranked_result = await League.ranked_info(summoner.id,regionCodes[region])
+            let ranked_result = await League.ranked_info(summoner.id,region)
             if(ranked_result.error === true)
                 return res.status(400).json({
                     error:true,

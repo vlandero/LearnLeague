@@ -12,7 +12,7 @@ interface Props{
 
 export default function Explore({matches}:Props) {
   return (
-    <div className='w-1/4 p-5'>
+    <div>
       {matches.map((mt)=>
         <div key={mt.match.toString()}>
           <p>By {mt.username}</p>

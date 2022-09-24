@@ -1,21 +1,22 @@
 import '../styles/globals.css'
 import type { AppContext, AppProps } from 'next/app'
 import Nav from '../components/nav'
-import { AppWrapper, useAuth } from '../context/state'
+import { AppWrapper } from '../wrappers/state'
 import ironSessionOptions from '../lib/session-options'
 import App from 'next/app'
 import { getIronSession } from 'iron-session'
 import { User } from '../lib/interfaces'
+import Body from '../wrappers/body'
 
 function MyApp({ Component, pageProps, user }: AppProps & { user:User }) {
 
   return (
       <AppWrapper userObj={user}>
         <Nav></Nav>
-        <Component {...pageProps} />
+        <Body>
+          <Component {...pageProps} />
+        </Body>
       </AppWrapper>
-
-    
   )
 }
 

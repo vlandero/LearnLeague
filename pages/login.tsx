@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/state';
+import { useAuth } from '../wrappers/state';
 import { ApiService } from '../lib/ApiCalls';
 import { Status, User } from '../lib/interfaces';
 

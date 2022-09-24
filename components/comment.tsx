@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import { useAuth } from '../context/state'
+import { useAuth } from '../wrappers/state'
 import { ApiService } from '../lib/ApiCalls'
 import { CommentType, Status } from '../lib/interfaces'
 import AddComment from './add-comment'

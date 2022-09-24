@@ -8,7 +8,7 @@ import connection from '../../lib/postgre'
 import {SummonerInDB} from '../../lib/interfaces'
 import { QueryResult } from 'pg'
 import Account from '../../components/account'
-import { useAuth } from '../../context/state'
+import { useAuth } from '../../wrappers/state'
 import GamePreview from '../../components/game-preview'
 
 type Props = {
@@ -49,14 +49,17 @@ export default function Profile({pageUser,error}:Props) {
         setPosts(JSON.parse(result.status));
     }
     useEffect(() => {
-        if(pageUser && user?.username === pageUser.username)
+        if(pageUser && user?.username === pageUser.username){
             setCanEdit(true);
-        }, []
-    )
+        }
+    }, [])
     useEffect(() => {
       getAccounts();
-      getPosts();
     }, [trigger])
+
+    useEffect(() => {
+        getPosts();
+    },[])
     
     
     function renderEditable(){
@@ -70,6 +73,7 @@ export default function Profile({pageUser,error}:Props) {
                             return alert("Could not log out");
                         }
                         logout();
+                        window.location.href = `/profile/${pageUser?.username}`;
                     }}>Logout</button>
                     <br/>
                     <button className='button' onClick={()=>{setModal(true)}}>Add Game</button>
@@ -82,14 +86,14 @@ export default function Profile({pageUser,error}:Props) {
         }
     }
     return (
-        <div>
+        <div className='page'>
             <p>This is {pageUser.username}'s profile</p>
             {renderEditable()}
             <div>
                 <h3>Summoners connected:</h3>
                 <div>
                     {accounts.map((acc)=>
-                        <Account key={acc.puuid} account={acc}></Account>
+                        <Account key={acc.puuid} setTrigger={setTrigger} canEdit={canEdit} account={acc}></Account>
                     )}
                 </div>
             </div>

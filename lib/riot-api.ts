@@ -1,7 +1,7 @@
 
 import axios from "axios"
 import { AxiosResponse } from "axios"
-import { bigRegions, RegionCodes } from "./interfaces"
+import { bigRegions, Region, regionCodes, RegionCodes } from "./interfaces"
 import { Match, Player, Summoner, Team, RankedInfo, internalError, Status } from "./interfaces"
 
 const riotapi = process.env.RIOTAPI
@@ -25,12 +25,12 @@ export class League{
         return summoner
     }
 
-    public static async ranked_info(encID:string,reg:string):Promise<Status>{
+    public static async ranked_info(encID:string,reg:Region):Promise<Status>{
         let result:AxiosResponse<RankedInfo[]>
         let soloq:RankedInfo|null = null
         const config = {
             method:'get',
-            url:'https://' + reg + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + encID,
+            url:'https://' + regionCodes[reg] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + encID,
             headers:{"X-Riot-Token": riotapi||''}
         }
         try{

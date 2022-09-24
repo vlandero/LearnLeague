@@ -22,7 +22,7 @@ export type SummonerInDB = {
     user_id:string,
     tier:string,
     rank:string,
-    LP:number,
+    lp:number,
     region:Region
 }
 

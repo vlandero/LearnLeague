@@ -19,6 +19,6 @@
         @apply cursor-pointer
     }
     .button{
-        @apply cursor-pointer border-cyan-900 border-4 p-1
+        @apply cursor-pointer border-cyan-900 border-4 p-1 rounded-2xl
     }
 }

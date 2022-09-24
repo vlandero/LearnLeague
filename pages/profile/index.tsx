@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useAuth } from '../../context/state'
+import { useAuth } from '../../wrappers/state'
 import { User } from '../../lib/interfaces'
 
 export default function Profile() {

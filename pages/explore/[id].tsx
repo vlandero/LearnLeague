@@ -8,7 +8,7 @@ import { ApiService } from '../../lib/ApiCalls'
 import Comment from '../../components/comment'
 import { withIronSessionSsr } from 'iron-session/next'
 import ironSessionOptions from '../../lib/session-options'
-import { useAuth } from '../../context/state'
+import { useAuth } from '../../wrappers/state'
 
 interface Props{
   match:Match,

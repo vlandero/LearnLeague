@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import { useAuth } from '../context/state'
+import { useAuth } from '../wrappers/state'
 import { ApiService } from '../lib/ApiCalls'
 import { ValidateEmail, ValidatePassword } from '../lib/helpers'
 import { Status } from '../lib/interfaces'
