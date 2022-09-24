@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import { ApiService } from '../../lib/ApiCalls'
-import { Match, Status, User } from '../../lib/interfaces'
+import { MatchLink, Status, User, Match } from '../../lib/interfaces'
 import AddGame from '../../components/add-game'
 import AddSummoner from '../../components/add-summoner'
 import { GetServerSideProps } from 'next'
@@ -9,6 +9,7 @@ import {SummonerInDB} from '../../lib/interfaces'
 import { QueryResult } from 'pg'
 import Account from '../../components/account'
 import { useAuth } from '../../context/state'
+import GamePreview from '../../components/game-preview'
 
 type Props = {
     pageUser:{
@@ -19,12 +20,13 @@ type Props = {
     error:string
 }
 
+
 export default function Profile({pageUser,error}:Props) {
     const [modal, setModal] = useState(false)
     const [modalSummoner, setModalSummoner] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
     const [accounts, setAccounts] = useState<SummonerInDB[]>([])
-    const [posts, setPosts] = useState<Match[]>([])
+    const [posts, setPosts] = useState<MatchLink[]>([])
     const [trigger, setTrigger] = useState<boolean>(false)
     const {user,logout} = useAuth()
     if(!pageUser){
@@ -34,12 +36,17 @@ export default function Profile({pageUser,error}:Props) {
             </div>
         )
     }
-    async function getGames(){
-        let result:Status = await ApiService.get(`/getgames/${pageUser?.id}`,{})
+    async function getAccounts(){
+        let result:Status = await ApiService.get(`/getaccounts/${pageUser?.id}`,{});
         if(result.error)
-            return alert(result.status)
-        let accounts:SummonerInDB[] = JSON.parse(result.status)
-        setAccounts(accounts)
+            return alert(result.status);
+        setAccounts(JSON.parse(result.status));
+    }
+    async function getPosts(){
+        let result:Status = await ApiService.get(`/getposts/${pageUser?.id}`,{});
+        if(result.error)
+            return alert(result.status);
+        setPosts(JSON.parse(result.status));
     }
     useEffect(() => {
         if(pageUser && user?.username === pageUser.username)
@@ -47,7 +54,8 @@ export default function Profile({pageUser,error}:Props) {
         }, []
     )
     useEffect(() => {
-      getGames()
+      getAccounts();
+      getPosts();
     }, [trigger])
     
     
@@ -88,7 +96,9 @@ export default function Profile({pageUser,error}:Props) {
             <div>
                 <h3>Posts:</h3>
                 <div>
-
+                    {posts.map((post)=>
+                        <GamePreview key={post.id} onClick={()=>{window.location.href=`/explore/${post.token+post.id.toString()}`}} match={post.match}></GamePreview>
+                    )}
                 </div>
             </div>
         </div>

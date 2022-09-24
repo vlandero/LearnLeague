@@ -2,7 +2,7 @@
 import axios from "axios"
 import { AxiosResponse } from "axios"
 import { bigRegions, RegionCodes } from "./interfaces"
-import { Match, Matches, Player, Summoner, Team, RankedInfo, internalError, Status } from "./interfaces"
+import { Match, Player, Summoner, Team, RankedInfo, internalError, Status } from "./interfaces"
 
 const riotapi = process.env.RIOTAPI
 

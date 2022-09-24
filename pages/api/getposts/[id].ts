@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { QueryResult } from "pg";
-import { internalError, Match, SummonerInDB } from "../../../lib/interfaces";
+import { internalError, Match, MatchInDB, MatchLink, SummonerInDB } from "../../../lib/interfaces";
 import connection from "../../../lib/postgre";
 
 interface TypedNextApiRequest extends NextApiRequest {
@@ -11,10 +11,11 @@ interface TypedNextApiRequest extends NextApiRequest {
 
 export default async function handler(req:TypedNextApiRequest,res:NextApiResponse){
     try{
-        let matchesResult:QueryResult<Match> = await connection.query(`SELECT * FROM matches WHERE user_id=${req.query.id}`)
-        let matches:Match[] = []
+        const query = `SELECT date_added,json,user_id,(SELECT username FROM users WHERE id=user_id),id,token FROM matches WHERE user_id=${Number(req.query.id)};`
+        const matchesResult:QueryResult<MatchInDB> = await connection.query(query)
+        let matches:MatchLink[] = []
         for(let match of matchesResult.rows){
-            matches.push(match)
+            matches.push({username:match.username,match:JSON.parse(match.json),id:match.id,token:match.token})
         }
         res.status(200).send({
             error:false,

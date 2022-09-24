@@ -107,9 +107,23 @@ export interface Match{
     seconds:number,
     player_puuid:string
 }
-export interface Matches{
-    matches:Match[],
-    error:string|null
+
+export type MatchInDB = {
+    id:number,
+    user_id:number,
+    username:string,
+    json:string,
+    date_added:Date,
+    description:string,
+    questions:string,
+    token:string
+}
+
+export type MatchLink = {
+    username:string,
+    id:number,
+    token:string,
+    match:Match,
 }
 
 export interface CommentType{

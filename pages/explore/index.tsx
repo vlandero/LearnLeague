@@ -1,25 +1,20 @@
 import React from 'react'
 import { GetServerSideProps } from 'next'
-import { Match } from '../../lib/interfaces'
+import { Match, MatchInDB, MatchLink } from '../../lib/interfaces'
 import connection from '../../lib/postgre'
 import GamePreview from '../../components/game-preview'
+import { QueryResult } from 'pg'
 
-type Matches = {
-  username:string,
-  id:number,
-  token:string,
-  match:Match,
-}
 
 interface Props{
-  matches:Matches[]
+  matches:MatchLink[]
 }
 
 export default function Explore({matches}:Props) {
   return (
     <div className='w-1/4 p-5'>
       {matches.map((mt)=>
-        <div key={mt.id.toString()}>
+        <div key={mt.match.toString()}>
           <p>By {mt.username}</p>
           <GamePreview onClick={()=>{window.location.href=`/explore/${mt.token+mt.id.toString()}`}} match={mt.match}></GamePreview>
         </div>
@@ -31,8 +26,8 @@ export default function Explore({matches}:Props) {
 
 export const getServerSideProps:GetServerSideProps = async() => {
   let query = `SELECT date_added,json,user_id,(SELECT username FROM users WHERE id=user_id),id,token from matches ORDER BY date_added FETCH FIRST 10 ROW ONLY;`
-  let result = await connection.query(query)
-  let arr:Matches[] = []
+  let result:QueryResult<MatchInDB> = await connection.query(query)
+  let arr:MatchLink[] = []
   for(let match of result.rows){
     arr.push({username:match.username,match:JSON.parse(match.json),id:match.id,token:match.token})
   }

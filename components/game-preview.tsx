@@ -44,7 +44,7 @@ export default function GamePreview({match,onClick}:Props) {
     }
     
   return (
-    <div onClick={onClick} className='border-2 border-green-500 mb-2 mt-1'>
+    <div onClick={onClick} className='border-2 border-green-500 mb-2 mt-1 max-w-3xl cursor-pointer'>
         <p>{match.minutes}:{match.seconds}</p>
         <div className='flex justify-around'>
             <div className='flex-1 text-center' style={!match.teams.blue.win?winningTeamStyles:{}}>
