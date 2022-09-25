@@ -73,6 +73,7 @@ export default function AddSummoner({isOpen,close,user,setTrigger}:Props) {
                 e.preventDefault();
                 setSummonerOK(false);
                 setMessage('');
+                console.log(summonerName,region);
                 let promise = await ApiService.post(`/riot`,{summonerName:summonerName,region:region},{});
                 let res:Status = await promise;
                 if(res.error === false)

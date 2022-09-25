@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function NavItem({link,children}:{link:string,children:JSX.Element|JSX.Element[]|string}) {
+export default function NavItem({link,children,className}:{link:string,children:JSX.Element|JSX.Element[]|string,className?:string}) {
   return (
-    <a className='w-4/5 text-center button mt-4' href={link}>{children}</a>
+    <a className={className} href={link}><span>{children}</span></a>
   )
 }

@@ -19,6 +19,12 @@
         @apply cursor-pointer
     }
     .button{
-        @apply cursor-pointer border-cyan-900 border-4 p-1 rounded-2xl
+        @apply cursor-pointer border-cyan-900 border-4 p-1
+    }
+    .mobile-nav-button{
+        @apply cursor-pointer bg-navLightBlue hover:bg-lightBlue w-4/5 text-center mt-6 p-1 rounded-2xl transition-colors duration-500
+    }
+    .nav-button{
+        @apply cursor-pointer ml-2 mr-2 text-center flex justify-center items-center text-white w-[100px] hover:bg-navLightBlue duration-700 rounded-3xl
     }
 }

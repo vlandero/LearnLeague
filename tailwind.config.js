@@ -7,7 +7,10 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        transparentOverlay:'rgba(0, 0, 0, 0.5)'
+        transparentOverlay:'rgba(0, 0, 0, 0.5)',
+        navBlue:'#0A343D',
+        navLightBlue:'#2E667E',
+        lightBlue:'#3D8BA1'
       }
     },
   },

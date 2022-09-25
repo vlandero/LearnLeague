@@ -9,14 +9,17 @@ const riotapi = process.env.RIOTAPI
 export class League{
 
     public static async summoner(name:string,region:string):Promise<Summoner> {
+        console.log(name,region);
         let result:AxiosResponse<any, any>
         const config = {
-            method:'get',
+            method:'GET',
             url:'https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name,
             headers:{"X-Riot-Token": riotapi||''}
         }
+        
         try{
-            result = await axios(config)
+            result = await axios(config);
+            console.log('object');
         }
         catch(err){
             throw err

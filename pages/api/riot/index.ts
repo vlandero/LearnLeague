@@ -3,27 +3,29 @@ import { League } from "../../../lib/riot-api";
 import { useRouter } from "next/router";
 import { internalError, Region, regionCodes, Summoner } from "../../../lib/interfaces";
 import connection from "../../../lib/postgre";
+import { QueryResult } from "pg";
 
 interface TypedNextApiRequest extends NextApiRequest {
     body:{
-        summoner:string,
+        summonerName:string,
         region:Region
     }
 }
 
 export default async function handler(req:TypedNextApiRequest,res:NextApiResponse){
-    console.log('intrat')
+    
     let summoner:Summoner;
     try{
+        console.log('intrat')
         let region = regionCodes[req.body.region]
-        summoner = await League.summoner(req.body.summoner,region)
-        let accs
+        console.log('intrat')
+        summoner = await League.summoner(req.body.summonerName,region)
+        let accs: QueryResult<any>
         try{
-            accs = await connection.query(`SELECT * FROM accounts WHERE puuid='${summoner.puuid}'`)
-            console.log(accs)
+            accs = await connection.query(`SELECT * FROM accounts WHERE puuid='${summoner.puuid}'`);
         }
         catch{
-            return res.status(400).send(internalError)
+            return res.status(400).send(internalError);
         }
         console.log('first')
         if(accs.rowCount > 0){
